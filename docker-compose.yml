@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+    db:
+        container_name: 'laravel-docker-01-db'
+        image: 'mysql:5.7'
+        restart: 'unless-stopped'
+        volumes:
+            - './mysql:/var/lib/mysql'
+        ports:
+            - '1876:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - ./mysql:/docker-entrypoint-initdb.d
+        networks:
+            - laravel-docker-01-net
+    nginx:
+        container_name: 'laravel-docker-01-nginx'
+        image: 'nginx:alpine'
+        restart: 'unless-stopped'
+        ports:
+            - '8000:80'
+        volumes:
+            - './laravelapp:/var/www'
+            - './nginx/:/etc/nginx/conf.d'
+        networks:
+            - 'laravel-docker-01-net'
+    laravelapp:
+        container_name: 'laravel-docker-01-app'
+        depends_on:
+            - db
+            - nginx
+        build: 
+            context: './laravelapp'
+            dockerfile: '../Dockerfile.laravelapp'
+            args:
+                user: 'suchman'
+                uid: '4444'
+        image: 'laravel-docker-01-app-image'
+        restart: 'unless-stopped'
+        working_dir: '/var/www/'
+        volumes:
+            - './laravelapp:/var/www'
+        environment:
+            APP_NAME: '${LARAVEL_APP_NAME}'
+            APP_ENV: '${LARAVEL_APP_ENV}'
+            APP_KEY: '${LARAVEL_APP_KEY}'
+            APP_DEBUG: ${LARAVEL_APP_DEBUG}
+        networks:
+            - 'laravel-docker-01-net'
+networks:
+    laravel-docker-01-net:
+        driver: 'bridge'
