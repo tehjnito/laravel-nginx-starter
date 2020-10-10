@@ -16,7 +16,6 @@ Disclaimer: this is just something I'm using for personal stuff, it's not necess
 ### Database
 This repo spins up a mysql container as well, if you wish to use it, you may place sql scripts in the ***mysql*** directory to have them executed when the container starts for the first time.
 See the reference for the official [mysql docker image](https://hub.docker.com/_/mysql/)
-The database is accesible via port `1876` by-the-way (IFYKYK).
 
 ### No Laravel CLI?
 - If you need to create a new laravel app without having laravel installed on the host machine:
